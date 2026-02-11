@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Success</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #00c853, #64dd17);
+    }
+
+    .success-box {
+      background: #ffffff;
+      padding: 40px;
+      width: 380px;
+      text-align: center;
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 5px solid #00c853;
+      position: relative;
+      margin-bottom: 20px;
+      animation: pop 0.4s ease-in-out;
+    }
+
+    .checkmark::after {
+      content: "";
+      position: absolute;
+      left: 22px;
+      top: 35px;
+      width: 20px;
+      height: 40px;
+      border-right: 5px solid #00c853;
+      border-bottom: 5px solid #00c853;
+      transform: rotate(45deg);
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      background: #00c853;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #00b44b;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="success-box">
+    <div class="checkmark"></div>
+    <h2>Success!</h2>
+    <p>Your operation was completed successfully.</p>
+    <button class="btn" onclick="goHome()">Go Home</button>
+  </div>
+
+  <script>
+    function goHome() {
+      window.location.href = "login.html"; // change this if needed
+    }
+  </script>
+
+</body>
+</html>
