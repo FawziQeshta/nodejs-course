@@ -26,23 +26,38 @@ liveReloadServer.server.once('connection', () => {
 
 
 app.get('/', (req, res) => {
-//   res.send('<h1>First App Hello World!</h1>')
-    // res.sendFile(__dirname + '/views/home.html')
-    res.render('home.ejs', { title: 'Home Login' }) // Render the home.ejs template and pass a title variable
-    // بيتحكم في اسم الصفحة اللي هتظهر
+  res.render('index.ejs', { title: 'Home Page' }) // Render the home.ejs template and pass a title variable
+  // بيتحكم في اسم الصفحة اللي هتظهر
+})
+
+
+app.get('/user/add.html', (req, res) => {
+  res.render('user/add.ejs', { title: 'Add User Page' })
+})
+
+app.get('/user/edit.html', (req, res) => {
+  res.render('user/edit.ejs', { title: 'Edit User Page' })
+})
+
+app.get('/user/view.html', (req, res) => {
+  res.render('user/view.ejs', { title: 'View User Page' })
+})
+
+app.get('/user/search.html', (req, res) => {
+  res.render('user/search.ejs', { title: 'Search User Page' })
 })
 
 app.get('/success-page', (req, res) => {
-      LoginModel.find().then(
-        (data) => {
-            res.render('success-page.ejs', {userData: data.at(-1)}) // Render the success-page.ejs template and pass the retrieved login data as usersData
-            // data.at(-1) is used to get the last element of the data array, which is the most recently added login data. This allows us to display the email of the user who just logged in on the success page.
-        }
-    ).catch(
-        err => {
-            console.error('Error retrieving login data:', err);
-        }
-    ) // Retrieve all login data from the database and log it to the console
+  LoginModel.find().then(
+    (data) => {
+      res.render('success-page.ejs', { userData: data.at(-1) }) // Render the success-page.ejs template and pass the retrieved login data as usersData
+      // data.at(-1) is used to get the last element of the data array, which is the most recently added login data. This allows us to display the email of the user who just logged in on the success page.
+    }
+  ).catch(
+    err => {
+      console.error('Error retrieving login data:', err);
+    }
+  ) // Retrieve all login data from the database and log it to the console
 })
 
 app.listen(port, () => {
@@ -54,26 +69,6 @@ mongoose.connect('mongodb+srv://eng_fawzi:PAtP3HKvVm8OLFJ7@cluster0.rkmonru.mong
   .then(() => console.log('Success Database Connected!'))
   .catch(err => console.error(err));
 
-
-
-app.post('/login', (req, res) => {
-
-  const userLogin = new LoginModel(req.body); // Create a new instance of the LoginModel with the data from the request body
-
-  userLogin.save().then(
-    () => {
-      console.log('Login data saved successfully');
-      res.redirect('/success-page'); // Redirect back to the success page after processing the login data
-    }
-  ).catch(
-    err => {
-      console.error('Error saving login data:', err)
-      res.redirect('/');
-    } 
-  ) // Save the login data to the database
-
-  
-});
 
 /*const sql = require('mssql');
 const config = require('./dbconfig');
