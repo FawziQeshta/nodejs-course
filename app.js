@@ -3,9 +3,13 @@ const app = express()
 const port = 3000
 const mongoose = require('mongoose');
 app.use(express.urlencoded({ extended: true }));
-const LoginModel = require('./models/loginSchema'); // Import the LoginModel from the loginSchema.js file
+const Customer = require('./models/customerSchema'); // Import the LoginModel from the loginSchema.js file
 app.set('view engine', 'ejs');
 app.use(express.static('public')); // Serve static files from the 'public' directory
+var moment = require('moment'); // Import the moment library
+moment().format(); // Use moment to format the current date and time
+var methodOverride = require('method-override');
+app.use(methodOverride('_method'));
 
 
 // Auto refresh pages
@@ -15,6 +19,7 @@ const liveReloadServer = livereload.createServer();
 liveReloadServer.watch(path.join(__dirname, 'public'));
 
 const connectLivereload = require('connect-livereload');
+const { get } = require('http');
 app.use(connectLivereload());
 
 liveReloadServer.server.once('connection', () => {
@@ -26,8 +31,14 @@ liveReloadServer.server.once('connection', () => {
 
 
 app.get('/', (req, res) => {
-  res.render('index.ejs', { title: 'Home Page' }) // Render the home.ejs template and pass a title variable
-  // بيتحكم في اسم الصفحة اللي هتظهر
+
+  Customer.find().then(customers => {
+    res.render('index.ejs', { title: 'Home Page', customers: customers, moment: moment });
+  }).catch(err => {
+    console.error(err);
+    res.status(500).send('Error retrieving customers from database');
+  });
+
 })
 
 
@@ -35,29 +46,72 @@ app.get('/user/add.html', (req, res) => {
   res.render('user/add.ejs', { title: 'Add User Page' })
 })
 
-app.get('/user/edit.html', (req, res) => {
-  res.render('user/edit.ejs', { title: 'Edit User Page' })
+app.get('/editPage/:id', (req, res) => {
+  Customer.findById(req.params.id).then(user => {
+    res.render('user/edit.ejs', { title: 'Edit User Page', customer: user })
+  }).catch(err => {
+    console.error(err);
+    res.status(500).send('Error retrieving user from database');
+  });
 })
 
-app.get('/user/view.html', (req, res) => {
-  res.render('user/view.ejs', { title: 'View User Page' })
+app.get('/view/:id', (req, res) => {
+
+  Customer.findById(req.params.id).then(user => {
+    res.render('user/view.ejs', { title: 'View User Page', customer: user, moment: moment })
+  }).catch(err => {
+    console.error(err);
+    res.status(500).send('Error retrieving user from database');
+  });
+
 })
 
 app.get('/user/search.html', (req, res) => {
   res.render('user/search.ejs', { title: 'Search User Page' })
 })
 
-app.get('/success-page', (req, res) => {
-  LoginModel.find().then(
-    (data) => {
-      res.render('success-page.ejs', { userData: data.at(-1) }) // Render the success-page.ejs template and pass the retrieved login data as usersData
-      // data.at(-1) is used to get the last element of the data array, which is the most recently added login data. This allows us to display the email of the user who just logged in on the success page.
-    }
-  ).catch(
-    err => {
-      console.error('Error retrieving login data:', err);
-    }
-  ) // Retrieve all login data from the database and log it to the console
+app.post('/add-customer', (req, res) => {
+  const customer = new Customer(req.body);
+
+  customer.save().then(() => {
+    console.log('Customer added successfully!');
+    res.redirect('/');
+  }).catch(err => {
+    console.error(err);
+    res.status(500).send('Error saving customer to database');
+  });
+
+})
+
+app.delete('/delete/:id', (req, res) => {  
+  // one way to delete => Customer.findByIdAndDelete(req.params.id)
+
+  Customer.findOneAndDelete({_id: req.params.id}).then(() => {
+    console.log('Customer deleted successfully!');
+    res.redirect('/');
+  }).catch(err => {
+    console.error(err);
+    res.status(500).send('Error deleting customer from database');
+  });
+})
+
+app.put('/update/:id', (req, res) => {
+/*Customer.findOneAndUpdate({_id: req.params.id}, req.body).then(user => {
+    console.log('Customer updated successfully!');
+    res.redirect('/');
+  }).catch(err => {
+    console.error(err);
+    res.status(500).send('Error retrieving user from database');
+  }
+);*/
+
+  Customer.findByIdAndUpdate(req.params.id, req.body).then(user => {
+    console.log('Customer updated successfully!');
+    res.redirect('/');
+  }).catch(err => {
+    console.error(err);
+    res.status(500).send('Error retrieving user from database');
+  });
 })
 
 app.listen(port, () => {
